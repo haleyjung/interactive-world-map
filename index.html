@@ -1,0 +1,203 @@
+<!-- Styles -->
+<style>
+#chartdiv {
+  width: 100%;
+  height: 500px;
+  overflow: hidden;
+}
+</style>
+
+<!-- Resources -->
+<script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+<script src="https://cdn.amcharts.com/lib/4/maps.js"></script>
+<script src="https://cdn.amcharts.com/lib/4/geodata/worldLow.js"></script>
+<script src="https://cdn.amcharts.com/lib/4/themes/dataviz.js"></script>
+<script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
+
+<!-- Chart code -->
+<script>
+am4core.ready(function() {
+
+// Themes begin
+am4core.useTheme(am4themes_dataviz);
+am4core.useTheme(am4themes_animated);
+// Themes end
+
+// Create map instance
+var chart = am4core.create("chartdiv", am4maps.MapChart);
+
+// Set map definition
+chart.geodata = am4geodata_worldLow;
+
+// Set projection
+chart.projection = new am4maps.projections.Miller();
+
+// Create map polygon series
+var polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
+
+// Exclude Antartica
+polygonSeries.exclude = ["AQ"];
+
+// Make map load polygon (like country names) data from GeoJSON
+polygonSeries.useGeodata = true;
+
+// Configure series
+var polygonTemplate = polygonSeries.mapPolygons.template;
+polygonTemplate.polygon.fillOpacity = 0.6;
+
+
+// Create hover state and set alternative fill color
+var hs = polygonTemplate.states.create("hover");
+hs.properties.fill = chart.colors.getIndex(0);
+
+// Add image series
+var imageSeries = chart.series.push(new am4maps.MapImageSeries());
+imageSeries.mapImages.template.propertyFields.longitude = "longitude";
+imageSeries.mapImages.template.propertyFields.latitude = "latitude";
+imageSeries.mapImages.template.tooltipText = "{title}";
+
+var circle = imageSeries.mapImages.template.createChild(am4core.Circle);
+circle.radius = 3;
+circle.propertyFields.fill = "color";
+
+var circle2 = imageSeries.mapImages.template.createChild(am4core.Circle);
+circle2.radius = 3;
+circle2.propertyFields.fill = "color";
+
+
+circle2.events.on("inited", function(event){
+  animateBullet(event.target);
+})
+
+
+function animateBullet(circle) {
+    var animation = circle.animate([{ property: "scale", from: 1, to: 5 }, { property: "opacity", from: 1, to: 0 }], 1000, am4core.ease.circleOut);
+    animation.events.on("animationended", function(event){
+      animateBullet(event.target.object);
+    })
+}
+
+var colorSet = new am4core.ColorSet();
+
+imageSeries.data = [ {
+  "title": "Argentina",
+  "latitude": -38.4161,
+  "longitude": -63.6167,
+  "color":colorSet.next()
+}, {
+  "title": "Australia",
+  "latitude": -25.2744,
+  "longitude": 133.7751,
+  "color":colorSet.next()
+}, {
+  "title": "Bolivia",
+  "latitude": -16.2902,
+  "longitude": -63.5887,
+  "color":colorSet.next()
+}, {
+  "title": "Brazil",
+  "latitude": -14.2350,
+  "longitude": -51.9253,
+  "color":colorSet.next()
+}, {
+  "title": "Chile",
+  "latitude": -35.6751,
+  "longitude": -71.5430,
+  "color":colorSet.next()
+}, {
+  "title": "China",
+  "latitude": 35.8617,
+  "longitude": 104.1954,
+  "color":colorSet.next()
+}, {
+  "title": "Columbia",
+  "latitude": 4.5709,
+  "longitude": -74.2973,
+  "color":colorSet.next()
+}, {
+  "title": "Costa Rica",
+  "latitude": 9.7489,
+  "longitude": -83.7534,
+  "color":colorSet.next()
+}, {
+  "title": "Ecuador",
+  "latitude": -1.8312,
+  "longitude": -78.1834,
+  "color":colorSet.next()
+}, {
+  "title": "Guatemala",
+  "latitude": 15.7835,
+  "longitude": -90.2308,
+  "color":colorSet.next()
+}, {
+  "title": "India",
+  "latitude": 20.5937,
+  "longitude": 78.9629,
+  "color":colorSet.next()
+}, {
+  "title": "Indonesia",
+  "latitude": -6.200000,
+  "longitude": 106.816666,
+  "color":colorSet.next()
+}, {
+  "title": "Iran",
+  "latitude": 32.4279,
+  "longitude": 53.6880,
+  "color":colorSet.next()
+}, {
+  "title": "Mexico",
+  "latitude": 23.6345,
+  "longitude": -102.5528,
+  "color":colorSet.next()
+}, {
+  "title": "Russia",
+  "latitude": 61.5240,
+  "longitude": 105.3188,
+  "color":colorSet.next()
+}, {
+  "title": "Singapore",
+  "latitude": 1.3521,
+  "longitude": 103.8198,
+  "color":colorSet.next()
+}, {
+  "title": "South Africa",
+  "latitude": -30.5595,
+  "longitude": 22.9375,
+  "color":colorSet.next()
+}, {
+  "title": "South Korea",
+  "latitude": 35.9078,
+  "longitude": 127.7669,
+  "color":colorSet.next()
+}, {
+  "title": "Spain",
+  "latitude": 40.4637,
+  "longitude": -3.7492,
+  "color":colorSet.next()
+}, {
+  "title": "Thailand",
+  "latitude": 15.8700,
+  "longitude": 100.9925,
+  "color":colorSet.next()
+}, {
+  "title": "Turkey",
+  "latitude": 38.9637,
+  "longitude": 35.2433,
+  "color":colorSet.next()
+}, {
+  "title": "Orlando, FL, USA",
+  "latitude": 28.5383,
+  "longitude": -81.3792,
+  "color":colorSet.next()
+}, {
+  "title": "Vietnam",
+  "latitude": 14.0583,
+  "longitude": 108.2772,
+  "color":colorSet.next()
+} ];
+
+}); // end am4core.ready()
+</script>
+
+<!-- HTML -->
+<div id="chartdiv"></div>
